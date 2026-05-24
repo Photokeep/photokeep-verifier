@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Photokeep 离线验证器",
+        "title": "Photokeep Verifier",
         "width": 980,
         "height": 760,
         "minWidth": 760,

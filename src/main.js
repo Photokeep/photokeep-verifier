@@ -5,42 +5,42 @@ import "./styles.css";
 const app = document.querySelector("#app");
 
 window.addEventListener("error", (event) => {
-  document.body.innerHTML = `<pre style="white-space: pre-wrap; padding: 24px; color: #b42318;">前端加载错误：${event.message}</pre>`;
+  document.body.innerHTML = `<pre style="white-space: pre-wrap; padding: 24px; color: #b42318;">Frontend load error: ${event.message}</pre>`;
 });
 
 window.addEventListener("unhandledrejection", (event) => {
-  document.body.innerHTML = `<pre style="white-space: pre-wrap; padding: 24px; color: #b42318;">前端异步错误：${event.reason}</pre>`;
+  document.body.innerHTML = `<pre style="white-space: pre-wrap; padding: 24px; color: #b42318;">Frontend async error: ${event.reason}</pre>`;
 });
 
 app.innerHTML = `
   <main>
     <section class="top">
       <div>
-        <h1>Photokeep 离线验证器</h1>
-        <p>选择加密原始文件，粘贴自己的 AES key，在本机解密预览。</p>
+        <h1>Photokeep Verifier</h1>
+        <p>Select an encrypted original file, paste your key, and decrypt it locally for preview.</p>
       </div>
-      <div class="status">离线模式</div>
+      <div class="status">Offline Mode</div>
     </section>
 
     <section class="trust">
-      <span>不会连接 Photokeep 服务器</span>
-      <span>文件和密钥不会上传</span>
-      <span>退出后清理临时明文</span>
+      <span>No connection to Photokeep servers</span>
+      <span>Files and keys are never uploaded</span>
+      <span>Temporary decrypted files are cleaned up</span>
     </section>
 
     <section class="panel">
-      <label>加密文件或 Live Photo zip</label>
+      <label>Encrypted file or Live Photo zip</label>
       <div class="file-row">
-        <input id="file-path" readonly placeholder="请选择 .enc 或 .zip 文件" />
-        <button id="choose-file" type="button">选择文件</button>
+        <input id="file-path" readonly placeholder="Choose a .enc or .zip file" />
+        <button id="choose-file" type="button">Choose File</button>
       </div>
 
-      <label for="key">AES key</label>
-      <textarea id="key" spellcheck="false" placeholder="粘贴 base64 / hex / 32 字节原始密钥"></textarea>
+      <label for="key">Your Key</label>
+      <textarea id="key" spellcheck="false" placeholder="Open Photokeep app -> Account -> My Key, tap Copy, then paste it here."></textarea>
 
       <div class="actions">
-        <button id="decrypt" type="button">解密并预览</button>
-        <button id="clear" class="secondary" type="button">清理结果</button>
+        <button id="decrypt" type="button">Decrypt and Preview</button>
+        <button id="clear" class="secondary" type="button">Clear Results</button>
       </div>
 
       <div id="message" class="message"></div>
@@ -75,7 +75,7 @@ function setMessage(text, isError = false) {
 function setBusy(busy) {
   decryptButton.disabled = busy;
   chooseFile.disabled = busy;
-  decryptButton.textContent = busy ? "解密中" : "解密并预览";
+  decryptButton.textContent = busy ? "Decrypting" : "Decrypt and Preview";
 }
 
 function renderResults(items) {
@@ -103,7 +103,7 @@ function renderResults(items) {
     } else {
       const unknown = document.createElement("div");
       unknown.className = "unknown";
-      unknown.textContent = "已解密，但当前版本无法直接预览此类型。";
+      unknown.textContent = "Decrypted, but this file type cannot be previewed directly in the current version.";
       section.appendChild(unknown);
     }
 
@@ -113,7 +113,7 @@ function renderResults(items) {
     const save = document.createElement("button");
     save.className = "secondary";
     save.type = "button";
-    save.textContent = "保存解密文件";
+    save.textContent = "Save Decrypted File";
     save.addEventListener("click", async () => {
       try {
         await invoke("save_result", { id: item.id });
@@ -127,7 +127,7 @@ function renderResults(items) {
       const openButton = document.createElement("button");
       openButton.className = "secondary";
       openButton.type = "button";
-      openButton.textContent = "用系统播放器打开";
+      openButton.textContent = "Open with System Player";
       openButton.addEventListener("click", async () => {
         try {
           await invoke("open_result", { id: item.id });
@@ -166,29 +166,29 @@ chooseFile.addEventListener("click", async () => {
       setMessage("");
     }
   } catch (err) {
-    setMessage("无法打开文件选择器：" + String(err), true);
+    setMessage("Unable to open file picker: " + String(err), true);
   }
 });
 
 decryptButton.addEventListener("click", async () => {
   const key = keyInput.value.trim();
   if (!selectedPath) {
-    setMessage("请先选择加密文件。", true);
+    setMessage("Please choose an encrypted file first.", true);
     return;
   }
   if (!key) {
-    setMessage("请粘贴 AES key。", true);
+    setMessage("Please paste your key.", true);
     return;
   }
 
   setBusy(true);
   results.innerHTML = "";
-  setMessage("正在本机解密，较大的视频可能需要一点时间...");
+  setMessage("Decrypting locally. Large videos may take a moment...");
 
   try {
     const response = await invoke("decrypt_file", { path: selectedPath, key });
     renderResults(response.items || []);
-    setMessage("解密完成。");
+    setMessage("Decryption complete.");
   } catch (err) {
     setMessage(String(err), true);
   } finally {
@@ -200,7 +200,7 @@ clearButton.addEventListener("click", async () => {
   try {
     await invoke("clear_results");
     results.innerHTML = "";
-    setMessage("已清理临时结果。");
+    setMessage("Temporary results cleared.");
   } catch (err) {
     setMessage(String(err), true);
   }
