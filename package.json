@@ -7,6 +7,7 @@
     "dev": "vite --host localhost",
     "build": "vite build",
     "preview": "vite preview --host localhost",
+    "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build"
   },
